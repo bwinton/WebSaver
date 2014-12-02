@@ -20,6 +20,7 @@
     var maxCrackLimit;
     var tick;
     var timeouts;
+    var ratio = 1;
 
 
     // UTILITY METHODS -----------------------------------------------------
@@ -37,7 +38,7 @@
     }
 
     function point(x, y) {
-      paper.fillRect(x, y, 1, 1);
+      paper.fillRect(x, y, ratio, ratio);
     }
 
     function makeCrack() {
@@ -236,7 +237,7 @@
       // Clear the frame.
       paper.strokeStyle = "rgba(0,0,0,0)";
       paper.fillStyle = "rgb(255,255,255)";
-      paper.fillRect(0,0,width,height);
+      paper.fillRect(0,0,width*ratio,height*ratio);
     }
 
     function clock_tick() {
@@ -255,10 +256,23 @@
     function setup() {
       var notepad = document.getElementById("notepad");
 
-      width = notepad.width = window.innerWidth;
-      height = notepad.height = window.innerHeight;
+      width = window.innerWidth;
+      height = window.innerHeight;
 
       paper = notepad.getContext("2d");
+
+      var devRatio = window.devicePixelRatio || 1;
+      var backingRatio = paper.webkitBackingStorePixelRatio || 1;
+      if (devRatio != backingRatio) {
+        ratio = devRatio / backingRatio;
+        notepad.style.width = width + "px";
+        notepad.style.height = height + "px";
+        width *= ratio;
+        height *= ratio;
+        paper.scale(ratio, ratio);
+      }
+      notepad.width = width;
+      notepad.height = height;
 
       var img = new Image();
       img.src = pollockShimmering;
